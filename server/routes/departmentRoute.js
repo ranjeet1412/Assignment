@@ -11,17 +11,17 @@ import { authenticate, isManager } from '../middleware/authMiddleware.js';
 export const departmentRoute = express.Router();
 
 // Create a new department (manager only)
-departmentRoute.post('/', authenticate, isManager, createDepartment);
+departmentRoute.post('/departments', authenticate, isManager, createDepartment);
 
 // Get all departments
-departmentRoute.get('/', authenticate, getDepartments);
+departmentRoute.get('/departments', authenticate, getDepartments);
 
 // Get a single department
-departmentRoute.get('/:id', authenticate, getDepartment);
+departmentRoute.get('/departments/:id', authenticate, getDepartment);
 
 // Update a department (manager only)
-departmentRoute.put('/:id', authenticate, isManager, updateDepartment);
+departmentRoute.put('/departments/:id', authenticate, isManager, updateDepartment);
 
 // Delete a department (manager only)
-departmentRoute.delete('/:id', authenticate, isManager, deleteDepartment);
+departmentRoute.delete('/departments/:id', authenticate, isManager, deleteDepartment);
 

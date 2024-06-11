@@ -29,15 +29,15 @@ const EmployeeDetails = () => {
   }, [id]);
 
   return (
-    <Container className="d-flex justify-content-center align-items-center">
-      <Row>
+    <Container>
+      <Row className="mt-3">
         <Col lg="3" md="3">
-          <Link to="/employeelist" className="btn btn-secondary me-2">
+          <Link to="/employeelist" className="btn btn-secondary ">
             Back
           </Link>
         </Col>
-        <Col lg="6" md="6"></Col>
-        <Card style={{ width: "400px" }}>
+        <Col lg="6" md="6">
+        <Card style={{ width: "400px", marginTop:"50px" }}>
           <CardBody>
             <CardTitle tag="h5">Employee Details</CardTitle>
             {employee ? (
@@ -53,6 +53,8 @@ const EmployeeDetails = () => {
             )}
           </CardBody>
         </Card>
+        </Col>
+       
         <Col lg="3" md="3"></Col>
       </Row>
     </Container>

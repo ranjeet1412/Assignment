@@ -10,36 +10,61 @@ const DepartmentForm = () => {
   const { authState } = useContext(AuthContext);
   const [formData, setFormData] = useState({
     name: '',
-    manager: '',
     employees: []
   });
   const [users, setUsers] = useState([]);
+  const [selectedEmployees, setSelectedEmployees] = useState([]);
 
   useEffect(() => {
-    // Fetch all users to assign as managers or employees
-    axios.get('http://localhost:3001/api/users')
-      .then(res => setUsers(res.data))
+    const config = {
+      headers: {
+        Authorization: `Bearer ${authState.user.token}`
+      }
+    };
+
+    axios.get('http://localhost:3001/api/users', config)
+      .then(res => {
+        const employees = res.data.filter(user => user.role === 'employee');
+        setUsers(employees);
+        if (id) {
+          axios.get(`http://localhost:3001/api/departments/${id}`, config)
+            .then(res => {
+              setFormData({ ...res.data, employees: res.data.employees.map(employee => employee._id) });
+              setSelectedEmployees(res.data.employees.map(employee => employee._id));
+            })
+            .catch(error => console.error('Error fetching department:', error.response.data.error));
+        }
+      })
       .catch(error => console.error('Error fetching users:', error.response.data.error));
+  }, [authState.user.token, id]);
 
-    if (id) {
-      // Fetch department data if id is provided
-      axios.get(`http://localhost:3001/api/departments/${id}`)
-        .then(res => setFormData(res.data))
-        .catch(error => console.error('Error fetching department:', error.response.data.error));
+  const { name } = formData;
+
+  const handleChange = e => {
+    const { value, checked } = e.target;
+    if (checked) {
+      setSelectedEmployees(prevSelected => [...prevSelected, value]);
+    } else {
+      setSelectedEmployees(prevSelected => prevSelected.filter(empId => empId !== value));
     }
-  }, [id]);
+  };
 
-  const { name, manager, employees } = formData;
-
-  const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
-
-  const onSubmit = async e => {
+  const handleSubmit = async e => {
     e.preventDefault();
     try {
+      const updatedFormData = { ...formData, employees: selectedEmployees };
       if (id) {
-        await axios.put(`http://localhost:3001/api/departments/${id}`, formData);
+        await axios.put(`http://localhost:3001/api/departments/${id}`, updatedFormData, {
+          headers: {
+            Authorization: `Bearer ${authState.user.token}`
+          }
+        });
       } else {
-        await axios.post('http://localhost:3001/api/departments', formData);
+        await axios.post('http://localhost:3001/api/departments', updatedFormData, {
+          headers: {
+            Authorization: `Bearer ${authState.user.token}`
+          }
+        });
       }
       navigate('/departments');
     } catch (error) {
@@ -50,50 +75,50 @@ const DepartmentForm = () => {
   return (
     <Container>
       <h1>{id ? 'Edit Department' : 'Create Department'}</h1>
-      <Form onSubmit={onSubmit}>
+      <Form onSubmit={handleSubmit}>
         <FormGroup>
           <Label for="name">Name</Label>
           <Input
             type="text"
             name="name"
             value={name}
-            onChange={onChange}
+            onChange={e => setFormData({ ...formData, name: e.target.value })}
             required
           />
         </FormGroup>
         <FormGroup>
-          <Label for="manager">Manager</Label>
-          <Input
-            type="select"
-            name="manager"
-            value={manager}
-            onChange={onChange}
-            required
-          >
-            <option value="">Select Manager</option>
-            {users.filter(user => user.role === 'manager').map(user => (
-              <option key={user._id} value={user._id}>{user.username}</option>
-            ))}
-          </Input>
+          <Label>Employees</Label>
+          {users.map(user => (
+            <div key={user._id} className="form-check">
+              <input
+                type="checkbox"
+                className="form-check-input"
+                id={`employee-${user._id}`}
+                value={user._id}
+                onChange={handleChange}
+                checked={selectedEmployees.includes(user._id)}
+              />
+              <label className="form-check-label" htmlFor={`employee-${user._id}`}>
+                {user.username}
+              </label>
+            </div>
+          ))}
         </FormGroup>
-        <FormGroup>
-          <Label for="employees">Employees</Label>
-          <Input
-            type="select"
-            name="employees"
-            value={employees}
-            onChange={onChange}
-            multiple
-          >
-            {users.filter(user => user.role === 'employee').map(user => (
-              <option key={user._id} value={user._id}>{user.username}</option>
-            ))}
-          </Input>
-        </FormGroup>
-        <Button type="submit" color="primary">
-          {id ? 'Update' : 'Create'}
-        </Button>
+        <div className="mb-3">
+          <Button type="button" color="secondary" onClick={() => navigate('/departments')}>
+            Back
+          </Button>
+          <Button type="submit" color="primary" className="ms-2">
+            {id ? 'Update' : 'Create'}
+          </Button>
+        </div>
       </Form>
+      <div>
+        <h3>Selected Employees</h3>
+        {selectedEmployees.map(employeeId => (
+          <div key={employeeId}>{users.find(user => user._id === employeeId)?.username}</div>
+        ))}
+      </div>
     </Container>
   );
 };

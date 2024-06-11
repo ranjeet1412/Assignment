@@ -3,8 +3,8 @@ import Department from '../models/departmentModel.js';
 // Create a new department
 export const createDepartment = async (req, res) => {
   try {
-    const { name, manager, employees } = req.body;
-    const department = new Department({ name, manager, employees });
+    const { name, employees } = req.body;
+    const department = new Department({ name, employees });
     await department.save();
     res.status(201).json({ message: 'Department created successfully', department });
   } catch (error) {
@@ -15,7 +15,7 @@ export const createDepartment = async (req, res) => {
 // Get all departments
 export const getDepartments = async (req, res) => {
   try {
-    const departments = await Department.find().populate('manager').populate('employees');
+    const departments = await Department.find().populate('employees');
     res.status(200).json(departments);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -26,7 +26,7 @@ export const getDepartments = async (req, res) => {
 export const getDepartment = async (req, res) => {
   try {
     const { id } = req.params;
-    const department = await Department.findById(id).populate('manager').populate('employees');
+    const department = await Department.findById(id).populate('employees');
     if (!department) {
       return res.status(404).json({ error: 'Department not found' });
     }
@@ -40,8 +40,8 @@ export const getDepartment = async (req, res) => {
 export const updateDepartment = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, manager, employees } = req.body;
-    const department = await Department.findByIdAndUpdate(id, { name, manager, employees }, { new: true }).populate('manager').populate('employees');
+    const { name, employees } = req.body;
+    const department = await Department.findByIdAndUpdate(id, { name, employees }, { new: true }).populate('employees');
     if (!department) {
       return res.status(404).json({ error: 'Department not found' });
     }

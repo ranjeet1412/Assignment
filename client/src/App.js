@@ -7,7 +7,6 @@ import Login from './components/login/Login';
 import Register from './components/register/Register';
 import Navbar from './components/navbar/Navbar';
 import { AuthProvider } from './context/AuthContext';
-import Dashboard from './components/dashboard/Dashboard';
 import PrivateRoute from './utils/PrivateRoute';
 import DepartmentList from './components/department/DepartmentList';
 import DepartmentForm from './components/department/DepartmentForm';
@@ -29,7 +28,6 @@ function App() {
           <Route path="/employeelist/:id" element={<EmployeeDetails />} />
           <Route path="/employeelist/:id/edit" element={<EmployeeEdit />} />
 
-            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/departments" element={<DepartmentList />} />
             <Route path="/departments/new" element={<DepartmentForm />} />
             <Route path="/departments/:id/edit" element={<DepartmentForm />} />

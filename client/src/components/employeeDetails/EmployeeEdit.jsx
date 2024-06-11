@@ -1,11 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { Container, Form, FormGroup, Label, Input, Button } from "reactstrap";
+import {
+  Container,
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  Button,
+  Row,
+  Col,
+} from "reactstrap";
 import { useParams, useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
 
 const EmployeeEdit = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { authState } = useContext(AuthContext);
 
   const [employee, setEmployee] = useState({
     username: "",
@@ -33,8 +44,18 @@ const EmployeeEdit = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:3001/api/users/${id}`, employee);
-      navigate("/employeelist"); 
+      const token = authState.user.token;
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      await axios.put(
+        `http://localhost:3001/api/users/${id}`,
+        employee,
+        config
+      );
+      navigate("/employeelist");
     } catch (error) {
       console.error("Error updating employee details:", error);
     }
@@ -42,42 +63,57 @@ const EmployeeEdit = () => {
 
   return (
     <Container>
-      <h1 className="text-center">Edit Employee</h1>
-      <Form onSubmit={handleSubmit}>
-        <FormGroup>
-          <Label for="username">Username</Label>
-          <Input
-            type="text"
-            name="username"
-            id="username"
-            value={employee.username}
-            onChange={handleChange}
-          />
-        </FormGroup>
-        <FormGroup>
-          <Label for="role">Role</Label>
-          <Input
-            type="text"
-            name="role"
-            id="role"
-            value={employee.role}
-            onChange={handleChange}
-          />
-        </FormGroup>
-        <FormGroup>
-          <Label for="location">Location</Label>
-          <Input
-            type="text"
-            name="location"
-            id="location"
-            value={employee.location}
-            onChange={handleChange}
-          />
-        </FormGroup>
-        <Button type="submit" color="primary">
-          Save
-        </Button>
-      </Form>
+      <Row>
+        <h1 className="text-center">Edit Employee</h1>
+
+        <Col md="3"></Col>
+        <Col md="6">
+          <Form onSubmit={handleSubmit}>
+            <FormGroup>
+              <Label for="username">Username</Label>
+              <Input
+                type="text"
+                name="username"
+                id="username"
+                value={employee.username}
+                onChange={handleChange}
+              />
+            </FormGroup>
+            <FormGroup>
+              <Label for="role">Role</Label>
+              <Input
+                type="select"
+                name="role"
+                id="role"
+                value={employee.role}
+                onChange={handleChange}
+              >
+                <option value="employee">Employee</option>
+                <option value="manager">Manager</option>
+              </Input>
+            </FormGroup>
+            <FormGroup>
+              <Label for="location">Location</Label>
+              <Input
+                type="text"
+                name="location"
+                id="location"
+                value={employee.location}
+                onChange={handleChange}
+              />
+            </FormGroup>
+            <div className="text-center">
+              <Button type="submit" color="primary">
+                Save
+              </Button>
+              <Button type="button" color="warning ms-3" onClick={() => navigate("/employeelist")}>
+                Cancel
+              </Button>
+            </div>
+          </Form>
+        </Col>
+        <Col md="3"></Col>
+      </Row>
     </Container>
   );
 };

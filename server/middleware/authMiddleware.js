@@ -20,6 +20,7 @@ export const authenticate = async (req, res, next) => {
 };
 
 export const isManager = (req, res, next) => {
+  // console.log("called")
   if (req.user.role !== 'manager') {
     return res.status(403).json({ error: 'Access denied' });
   }
