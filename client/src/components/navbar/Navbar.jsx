@@ -21,7 +21,7 @@ const Navbar = () => {
   return (
     <div>
       <ReactstrapNavbar color="light" light expand="md">
-        <NavbarBrand tag={Link} to="/">MyApp</NavbarBrand>
+        <NavbarBrand tag={Link} to="/employeelist" ><h3>Assignment</h3></NavbarBrand>
         <NavbarToggler onClick={toggle} />
         <Collapse isOpen={isOpen} navbar>
           <Nav className="ms-auto" navbar>

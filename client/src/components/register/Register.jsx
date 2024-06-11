@@ -35,7 +35,10 @@ const Register = () => {
     setLoading(true);
     setError("");
     try {
-      const res = await axios.post("http://localhost:3001/api/auth/register", formData);
+      const res = await axios.post(
+        "http://localhost:3001/api/auth/register",
+        formData
+      );
       navigate("/login");
     } catch (error) {
       setError(error.response?.data?.error || "Registration failed");
@@ -94,9 +97,11 @@ const Register = () => {
                 required
               />
             </FormGroup>
-            <Button type="submit" color="primary" disabled={loading}>
-              {loading ? <Spinner size="sm" /> : "Register"}
-            </Button>
+            <div className="text-center">
+              <Button type="submit" color="primary" disabled={loading}>
+                {loading ? <Spinner size="sm" /> : "Register"}
+              </Button>
+            </div>
           </Form>
         </Col>
         <Col md="3"></Col>

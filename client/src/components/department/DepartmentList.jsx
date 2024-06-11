@@ -53,9 +53,10 @@ const DepartmentList = () => {
           </Link>
         </Col>
         <Col md={8} className="mt-5">
-          <Table bordered>
+          <Table striped bordered>
             <thead>
               <tr>
+                <th>#</th>
                 <th>Name</th>
                 <th>Employees</th>
                 {authState.user && authState.user.role === "manager" && (
@@ -64,8 +65,9 @@ const DepartmentList = () => {
               </tr>
             </thead>
             <tbody>
-              {departments.map((department) => (
+              {departments.map((department , index) => (
                 <tr key={department._id}>
+                  <th scope="row">{index + 1}</th>
                   <td>{department.name}</td>
                   <td>
                     {department.employees.map((emp) => emp.username).join(", ")}

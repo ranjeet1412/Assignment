@@ -12,7 +12,8 @@ const EmployeeList = () => {
     fetchEmployees();
   }, [authState.user.token]);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
   const fetchEmployees = async () => {
     try {
       const token = authState.user.token;
@@ -40,8 +41,6 @@ const EmployeeList = () => {
         "http://localhost:3001/api/filter/location",
         config
       );
-      console.log("res ==>", res.data);
-
       setEmployees(res.data);
     } catch (error) {
       console.error("Error filtering employees by location:", error);
@@ -66,16 +65,36 @@ const EmployeeList = () => {
     }
   };
 
+  const deleteEmployee = async (id) => {
+    try {
+      const token = authState.user.token;
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      await axios.delete(`http://localhost:3001/api/users/${id}`, config);
+      setEmployees(employees.filter((employee) => employee._id !== id));
+    } catch (error) {
+      console.error("Error deleting employee:", error);
+    }
+  };
+
   return (
     <Container>
-     <Row className="mb-2 mt-2">
-      <Col>
-        <div className="text-end me-3">
-        <Button color="warning" onClick={() => navigate("/departments")}>View Department</Button>
-        </div>
-      </Col>
-     </Row>
-      <Row className="mt-5">
+      {authState.user.role === "manager" && (
+        <Row className="mt-2">
+          <Col>
+            <div className="text-end me-5">
+              <Button color="warning" onClick={() => navigate("/departments")}>
+                View Department
+              </Button>
+            </div>
+          </Col>
+        </Row>
+      )}
+
+      <Row className="mt-4">
         <Col md="1"></Col>
         <Col md="10">
           <h1 className="text-center mb-3">Employee List</h1>
@@ -129,9 +148,19 @@ const EmployeeList = () => {
                       </Button>
                     </Link>
                     {authState.user.role === "manager" && (
-                      <Link to={`/employeelist/${employee._id}/edit`}>
-                        <Button color="warning">Edit</Button>
-                      </Link>
+                      <>
+                        <Link to={`/employeelist/${employee._id}/edit`}>
+                          <Button color="warning" className="me-2">
+                            Edit
+                          </Button>
+                        </Link>
+                        <Button
+                          color="danger"
+                          onClick={() => deleteEmployee(employee._id)}
+                        >
+                          Delete
+                        </Button>
+                      </>
                     )}
                   </td>
                 </tr>

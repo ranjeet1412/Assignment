@@ -35,8 +35,15 @@ const Login = () => {
     setLoading(true);
     setError("");
     try {
-      const res = await axios.post("http://localhost:3001/api/auth/login", formData);
-      login({ token: res.data.token, userId: res.data.userId , role: res.data.role });
+      const res = await axios.post(
+        "http://localhost:3001/api/auth/login",
+        formData
+      );
+      login({
+        token: res.data.token,
+        userId: res.data.userId,
+        role: res.data.role,
+      });
       navigate("/employeelist");
     } catch (error) {
       setError(error.response?.data?.error || "Login failed");
@@ -72,9 +79,11 @@ const Login = () => {
                 required
               />
             </FormGroup>
-            <Button type="submit" color="primary" disabled={loading}>
-              {loading ? <Spinner size="sm" /> : "Login"}
-            </Button>
+            <div className="text-center">
+              <Button type="submit" color="primary" disabled={loading}>
+                {loading ? <Spinner size="sm" /> : "Login"}
+              </Button>
+            </div>
           </Form>
         </Col>
         <Col md="3"></Col>
